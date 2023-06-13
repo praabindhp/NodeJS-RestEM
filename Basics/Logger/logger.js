@@ -3,7 +3,7 @@ const EventEmitter = require("events");
 
 // Object: emitter
 // const emitter = new EventEmitter();
-// Already Used In app.js
+// Already Used In app.js By Class Logger
 
 var url = "http://praabindhp.com";
 
@@ -17,4 +17,4 @@ class Logger extends EventEmitter {
   }
 }
 
-module.exports = log;
+module.exports = Logger;
