@@ -19,13 +19,14 @@ console.log(result);
 
 // a = 2
 // b = 3
-// var result = (a * a * a * a * a) * b;
+// var result = (a**3) ** b;
 // console.log(result); // Output : 96
 
 // Double Parameter Functions
 
-var result = pralib.cubpow(7, 2);
+var result = pralib.cubpow(7, 3);
+// console.log((7**3)**3)
 console.log(result);
 
-var result = pralib.pentpow(7, 3);
+var result = pralib.pentpow(7, 2);
 console.log(result);
