@@ -1,8 +1,23 @@
 const express = require("express");
 const app = express();
+const logger = require("./logger");
+const loader = require("./loader");
 const Joi = require("joi"); // Class : Joi
+const load = require("./loader");
+
+// Middle Ware Functions
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+app.use(loader);
+app.use(logger);
+
+app.use(function(req, res, next){
+  console.log('Authenticating...');
+  next();
+});
 
 // Constants
 
@@ -82,12 +97,19 @@ app.post("/api/courses", (req, res) => {
   const result = schema.validate(req.body);
   console.log(result);
 
-  // Validation
-  if (!req.body.name || req.body.name.length < 5) {
+  if (result.error) {
     // 400 Bad Request
-    res.status(400).send("Name Is Required & Should Be Minimum 5 Characters");
+    res.status(400).send(result.error.details[0].message);
     return;
+  } else {
+    console.log(result);
   }
+
+  //   // Traditional Validation
+  //   if (!req.body.name || req.body.name.length < 5) { // 400 Bad Request
+  //     res.status(400).send("Name Is Required & Should Be Minimum 5 Characters");
+  //     return;
+  //   }
 
   const course = {
     id: courses.length + 1,
@@ -97,8 +119,49 @@ app.post("/api/courses", (req, res) => {
   res.send(course);
 });
 
-// app.put()
-// app.delete()
+// PUT Requests
+
+app.put("/api/courses/:id", (req, res) => {
+  // Look For The Course
+  // If Not Existing, Return 404
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  if (!course)
+    res.status(404).send("The Course 🛋 With The Given 🆔 Was ❌ Found");
+
+  // Validate
+  // If Invalid, Return 400 - Bad Request
+  const schema = Joi.object({
+    name: Joi.string().min(5).required(),
+  });
+
+  const result = schema.validate(req.body);
+  if (result.error) {
+    // 400 Bad Request
+    res.status(400).send(result.error.details[0].message);
+    return;
+  }
+
+  // Update The Course
+  course.name = req.body.name;
+  // Return The Updated Course
+  res.send(course);
+});
+
+// DELETE Requests
+app.delete("/api/courses/:id", (req, res) => {
+  // Look For The Course
+  // If Not Existing, Return 404
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  if (!course)
+    res.status(404).send("The Course 🛋 With The Given 🆔 Was ❌ Found");
+
+  // Delete
+  const index = courses.indexOf(course);
+  courses.splice(index, 1);
+
+  // Return The Same Course
+  res.send(course);
+});
 
 // Environment Variable
 
