@@ -1,15 +1,40 @@
 const express = require("express");
+const helmet = require("helmet");
+const morgan = require("morgan");
 const app = express();
 const logger = require("./logger");
 const loader = require("./loader");
 const Joi = require("joi"); // Class : Joi
-const load = require("./loader");
+const config = require("config");
+
+const startupDebugger = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
 
 // Middle Ware Functions
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(helmet());
+
+// Configuration
+
+console.log("Application Name: " + config.get("name"));
+console.log("Mail Server: " + config.get("mail.host"));
+console.log("Mail Password: " + config.get("mail.password"));
+// export app_password=12345678
+
+// console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+// console.log(`app: ${app.get("env")}`);
+
+if (app.get("env") === "development"){
+  app.use(morgan("tiny"));
+  startupDebugger("Morgan Enabled...");
+}
+
+// Db Workings...
+
+dbDebugger("Connected To The Database...");
 
 app.use(loader);
 app.use(logger);
