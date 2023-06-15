@@ -71,4 +71,17 @@ async function getCourses() {
   console.log(courses);
 }
 
-getCourses();
+// getCourses();
+
+async function updateCourse(id) {
+  const course = await Course.findById(id);
+  if (!course) return;
+
+  course.isPublished = true;
+  course.author = "Bindhu Krishnan";
+  
+  const result = await course.save();
+  console.log(result);
+};
+
+updateCourse('648aba5b1693b3f5abe0dee8');
