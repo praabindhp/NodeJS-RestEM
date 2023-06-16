@@ -1,5 +1,3 @@
-const { set } = require("joi/lib/types/lazy");
-
 console.log("Before"); // 1
 
 readInside(1, function (inside) {
